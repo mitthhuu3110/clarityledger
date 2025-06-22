@@ -16,3 +16,6 @@ spring:
   sql:
     init:
       platform: postgres
+
+jwt:
+  secret: mysecretkeyformythingshouldbe32chars

@@ -1,4 +1,5 @@
 package com.clarityledger.backend.user;
+// Interface that talks to the database
 
 import java.util.Optional;
 

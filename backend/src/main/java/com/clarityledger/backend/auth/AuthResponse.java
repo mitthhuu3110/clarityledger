@@ -1,4 +1,5 @@
 package com.clarityledger.backend.auth;
+// DTO: contains the JWT token returned to frontend
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

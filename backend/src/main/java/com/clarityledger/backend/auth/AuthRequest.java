@@ -1,5 +1,5 @@
 package com.clarityledger.backend.auth;
-
+// DTO: holds email & password on login
 import lombok.Data;
 
 @Data
