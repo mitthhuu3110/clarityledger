@@ -1,2 +1,2 @@
-# clarityledger
+# ClarityLedger
 Manage your expenses.
