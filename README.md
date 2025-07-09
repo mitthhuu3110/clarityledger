@@ -1,8 +1,8 @@
 # ClarityLedger
 Manage your expenses.
 
-Frontend -> React, CSS, JS
-Backend -> Spring boot
-CI/CD -> Jenkins, Ansible
-Infra -> Terraform
-Cloud Hosting -> AWS
+1.Frontend -> React, CSS, JS
+2.Backend -> Spring boot
+3.CI/CD -> Jenkins, Ansible
+4.Infra -> Terraform
+5.Cloud Hosting -> AWS
