@@ -3,6 +3,7 @@ package com.clarityledger.backend.transaction;
 import com.clarityledger.backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -22,11 +23,13 @@ public class Transaction {
 
     private String description;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private TransactionCategory category;
 
-    private LocalDate date;  // 🧠 This is the missing piece!
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -5,7 +5,7 @@ import com.clarityledger.backend.transaction.dto.TransactionResponse;
 import com.clarityledger.backend.user.User;
 import com.clarityledger.backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -19,26 +19,25 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
-    public void createTransaction(TransactionRequest request) {
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(currentUserEmail)
+    public TransactionResponse createTransaction(TransactionRequest request, UserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         Transaction transaction = Transaction.builder()
-                .amount(request.getAmount())
+                .amount(request.getAmount())  // ✅ BigDecimal
                 .description(request.getDescription())
-                .type(request.getType())
-                .category(request.getCategory())
+                .type(request.getType())  // ✅ Enum
+                .category(request.getCategory()) // ✅ Enum
                 .date(request.getDate())
                 .user(user)
                 .build();
 
         transactionRepository.save(transaction);
+        return mapToResponse(transaction);
     }
 
-    public List<TransactionResponse> getAllTransactions() {
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(currentUserEmail)
+    public List<TransactionResponse> getAllTransactions(UserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return transactionRepository.findByUser(user).stream()
@@ -46,15 +45,13 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteTransaction(Long id) {
-        Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
-        transactionRepository.delete(transaction);
-    }
+    public TransactionResponse updateTransaction(Long id, TransactionRequest request, UserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    public void updateTransaction(Long id, TransactionRequest request) {
         Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .filter(t -> t.getUser().getId().equals(user.getId()))
+                .orElseThrow(() -> new RuntimeException("Transaction not found or unauthorized"));
 
         transaction.setAmount(request.getAmount());
         transaction.setDescription(request.getDescription());
@@ -63,15 +60,27 @@ public class TransactionService {
         transaction.setDate(request.getDate());
 
         transactionRepository.save(transaction);
+        return mapToResponse(transaction);
+    }
+
+    public void deleteTransaction(Long id, UserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Transaction transaction = transactionRepository.findById(id)
+                .filter(t -> t.getUser().getId().equals(user.getId()))
+                .orElseThrow(() -> new RuntimeException("Transaction not found or unauthorized"));
+
+        transactionRepository.delete(transaction);
     }
 
     private TransactionResponse mapToResponse(Transaction transaction) {
         return TransactionResponse.builder()
                 .id(transaction.getId())
-                .amount(transaction.getAmount())
+                .amount(transaction.getAmount()) // BigDecimal ➝ works directly
                 .description(transaction.getDescription())
-                .type(transaction.getType())
-                .category(transaction.getCategory())
+                .type(transaction.getType().name()) // 🔥 convert enum to String
+                .category(transaction.getCategory().name())
                 .date(transaction.getDate())
                 .build();
     }
