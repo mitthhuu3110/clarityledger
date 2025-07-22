@@ -10,7 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +30,7 @@ public class TransactionService {
         Transaction transaction = Transaction.builder()
                 .amount(request.getAmount())  // ✅ BigDecimal
                 .description(request.getDescription())
-                .type(request.getType())  // ✅ Enum
+                .type(request.getType())     // ✅ Enum
                 .category(request.getCategory()) // ✅ Enum
                 .date(request.getDate())
                 .user(user)
@@ -78,9 +81,9 @@ public class TransactionService {
     private TransactionResponse mapToResponse(Transaction transaction) {
         return TransactionResponse.builder()
                 .id(transaction.getId())
-                .amount(transaction.getAmount()) // BigDecimal ➝ works directly
+                .amount(transaction.getAmount())
                 .description(transaction.getDescription())
-                .type(transaction.getType().name()) // 🔥 convert enum to String
+                .type(transaction.getType().name()) // Convert enum to String
                 .category(transaction.getCategory().name())
                 .date(transaction.getDate())
                 .build();
@@ -121,8 +124,8 @@ public class TransactionService {
 
         BigDecimal totalIncome = BigDecimal.ZERO;
         BigDecimal totalExpense = BigDecimal.ZERO;
-        Map<String, BigDecimal> incomeByCategory = new java.util.HashMap<>();
-        Map<String, BigDecimal> expenseByCategory = new java.util.HashMap<>();
+        Map<String, BigDecimal> incomeByCategory = new HashMap<>();
+        Map<String, BigDecimal> expenseByCategory = new HashMap<>();
 
         for (Transaction t : userTransactions) {
             if (t.getType() == TransactionType.INCOME) {
@@ -142,5 +145,4 @@ public class TransactionService {
                 .expenseByCategory(expenseByCategory)
                 .build();
     }
-
 }
