@@ -3,10 +3,12 @@ package com.clarityledger.backend.config;
 import com.clarityledger.backend.jwt.JwtAuthenticationFilter;
 import com.clarityledger.backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.*;
-import org.springframework.security.authentication.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.*;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.*;
@@ -27,8 +29,16 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()  // <- MUST be here
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/auth/**"        // Public - register/login
+                        ).permitAll()
+
+                        // Optional: you *could* split modules here explicitly
+                        // .requestMatchers("/api/categories/**").authenticated()
+                        // .requestMatchers("/api/transactions/**").authenticated()
+                        // .requestMatchers("/api/budgets/**").authenticated()
+
+                        .anyRequest().authenticated()  // Everything else
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
