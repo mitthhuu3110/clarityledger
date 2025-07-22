@@ -2,6 +2,7 @@ package com.clarityledger.backend.transaction;
 
 import com.clarityledger.backend.transaction.dto.TransactionRequest;
 import com.clarityledger.backend.transaction.dto.TransactionResponse;
+import com.clarityledger.backend.transaction.dto.TransactionSummaryResponse;
 import com.clarityledger.backend.user.User;
 import com.clarityledger.backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,4 +85,62 @@ public class TransactionService {
                 .date(transaction.getDate())
                 .build();
     }
+
+    public List<TransactionResponse> getFilteredTransactions(UserDetails userDetails,
+                                                             TransactionType type,
+                                                             TransactionCategory category,
+                                                             Integer month,
+                                                             Integer year) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return transactionRepository.findByUser(user).stream()
+                .filter(t -> type == null || t.getType() == type)
+                .filter(t -> category == null || t.getCategory() == category)
+                .filter(t -> month == null || t.getDate().getMonthValue() == month)
+                .filter(t -> year == null || t.getDate().getYear() == year)
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public TransactionSummaryResponse getSummary(UserDetails userDetails, Integer month, Integer year) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        List<Transaction> userTransactions = transactionRepository.findByUser(user);
+
+        if (month != null && year != null) {
+            userTransactions = userTransactions.stream()
+                    .filter(t -> t.getDate().getMonthValue() == month && t.getDate().getYear() == year)
+                    .toList();
+        } else if (year != null) {
+            userTransactions = userTransactions.stream()
+                    .filter(t -> t.getDate().getYear() == year)
+                    .toList();
+        }
+
+        BigDecimal totalIncome = BigDecimal.ZERO;
+        BigDecimal totalExpense = BigDecimal.ZERO;
+        Map<String, BigDecimal> incomeByCategory = new java.util.HashMap<>();
+        Map<String, BigDecimal> expenseByCategory = new java.util.HashMap<>();
+
+        for (Transaction t : userTransactions) {
+            if (t.getType() == TransactionType.INCOME) {
+                totalIncome = totalIncome.add(t.getAmount());
+                incomeByCategory.merge(t.getCategory().toString(), t.getAmount(), BigDecimal::add);
+            } else {
+                totalExpense = totalExpense.add(t.getAmount());
+                expenseByCategory.merge(t.getCategory().toString(), t.getAmount(), BigDecimal::add);
+            }
+        }
+
+        return TransactionSummaryResponse.builder()
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .balance(totalIncome.subtract(totalExpense))
+                .incomeByCategory(incomeByCategory)
+                .expenseByCategory(expenseByCategory)
+                .build();
+    }
+
 }

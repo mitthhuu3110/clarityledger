@@ -2,6 +2,7 @@ package com.clarityledger.backend.transaction;
 
 import com.clarityledger.backend.transaction.dto.TransactionRequest;
 import com.clarityledger.backend.transaction.dto.TransactionResponse;
+import com.clarityledger.backend.transaction.dto.TransactionSummaryResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +27,6 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<TransactionResponse>> getAllTransactions(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        List<TransactionResponse> transactions = transactionService.getAllTransactions(userDetails);
-        return ResponseEntity.ok(transactions);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<TransactionResponse> updateTransaction(
             @PathVariable Long id,
@@ -40,6 +34,25 @@ public class TransactionController {
             @AuthenticationPrincipal UserDetails userDetails) {
         TransactionResponse response = transactionService.updateTransaction(id, request, userDetails);
         return ResponseEntity.ok(response);
+    }
+    @GetMapping
+    public ResponseEntity<List<TransactionResponse>> getAllTransactions(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) TransactionType type,
+            @RequestParam(required = false) TransactionCategory category,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year
+    ) {
+        List<TransactionResponse> transactions = transactionService.getFilteredTransactions(userDetails, type, category, month, year);
+        return ResponseEntity.ok(transactions);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<TransactionSummaryResponse> getSummary(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year) {
+        return ResponseEntity.ok(transactionService.getSummary(userDetails, month, year));
     }
 
     @DeleteMapping("/{id}")
