@@ -21,9 +21,18 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
+  const handleStorageChange = () => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
-  }, []);
+  };
+
+  handleStorageChange(); // on mount
+  window.addEventListener('storage', handleStorageChange); // listen to changes
+
+  return () => {
+    window.removeEventListener('storage', handleStorageChange);
+  };
+}, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -33,8 +42,8 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-[color:var(--bg)] bg-opacity-90 backdrop-blur-md border-b border-gray-300 dark:border-gray-700 shadow-sm">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-        {/* Left: Logo */}
+      <div className="w-full px-4 md:px-8 py-4 flex items-center justify-between">
+        {/* Left: Logo & Title */}
         <Link
           href="/"
           className="flex items-center gap-2 text-xl font-bold font-mono hover:opacity-90 transition-opacity"
@@ -49,8 +58,8 @@ export default function Navbar() {
           Clarity-Ledger
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex gap-6 items-center">
+        {/* Right: Nav Links + Buttons */}
+        <div className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (
             <Link
               key={item.path}
@@ -61,26 +70,32 @@ export default function Navbar() {
             </Link>
           ))}
 
-{!isLoggedIn ? (
-  <Link
-    href="/login"
-    className="flex items-center gap-1 text-sm font-mono hover:text-brand-orange transition"
-  >
-    <span>Login / Sign Up</span>
-    <span className="text-lg">👤</span>
-  </Link>
-) : (
-  <button
-    onClick={handleLogout}
-    className="text-sm font-mono hover:text-red-500 transition"
-  >
-    Logout
-  </button>
-)}
+          {!isLoggedIn ? (
+            <Link
+              href="/login"
+              className="flex items-center gap-2 bg-[#708a87] text-white font-mono text-sm px-3 py-1.5 rounded-md hover:opacity-90 transition"
+            >
+              <Image
+                src="/icons/profile.png"
+                alt="Login Icon"
+                width={18}
+                height={18} 
+              />
+              Login/Sign Up
+            </Link>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="text-sm font-mono hover:text-red-500 transition"
+            >
+              Logout
+            </button>
+          )}
+
           <ThemeToggle />
         </div>
 
-        {/* Mobile Icons */}
+        {/* Mobile: Theme + Menu */}
         <div className="md:hidden flex items-center gap-3">
           <ThemeToggle />
           <button
@@ -107,26 +122,31 @@ export default function Navbar() {
             </Link>
           ))}
 
-        {!isLoggedIn ? (
-  <Link
-    href="/login"
-    className="flex items-center gap-1 hover:text-brand-orange transition"
-    onClick={() => setMenuOpen(false)}
-  >
-    <span>Login / Sign Up</span>
-    <span className="text-lg">👤</span>
-  </Link>
-) : (
-  <button
-    onClick={() => {
-      handleLogout();
-      setMenuOpen(false);
-    }}
-    className="hover:text-red-500 transition"
-  >
-    Logout
-  </button>
-)}
+          {!isLoggedIn ? (
+            <Link
+              href="/login"
+              className="flex items-center gap-2 bg-brand-orange text-white px-3 py-1.5 rounded-md hover:opacity-90 transition"
+              onClick={() => setMenuOpen(false)}
+            >
+              <Image
+                src="/icons/profile.png"
+                alt="Login Icon"
+                width={18}
+                height={18}
+              />
+              Login / Sign Up
+            </Link>
+          ) : (
+            <button
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
+              className="hover:text-red-500 transition"
+            >
+              Logout
+            </button>
+          )}
         </div>
       )}
     </nav>
