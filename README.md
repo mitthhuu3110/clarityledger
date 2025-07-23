@@ -58,3 +58,89 @@
 ---
 
 ## 📁 Project Structure (Backend)
+
+```
+clarityledger/
+│
+├── backend/
+│   ├── config/               # Spring Security & JWT config
+│   ├── auth/                 # Signup, Login, Auth filters
+│   ├── user/                 # User entity & repo
+│   ├── transaction/          # Transaction logic & APIs
+│   ├── budget/               # Budget models & APIs
+│   ├── forecast/             # Forecast service & response DTOs
+│   ├── dashboard/            # DashboardService
+│   └── ... (DTOs, Enums)
+│
+└── frontend/
+    ├── app/                  # Next.js app with pages & routes
+    ├── components/           # Reusable UI elements
+    ├── sections/             # Hero, Summary, Analytics, etc.
+    └── utils/                # API helpers, constants
+```
+
+---
+
+## 🧪 Testing
+
+- ✅ Backend: Tested all endpoints via **Postman**, includes authentication token flows
+- ✅ Validation: Bean-level validations using `@NotNull`, enums, and more
+- ✅ Frontend: Manually tested across different filters, states, and dashboard views
+
+---
+
+## ⚙️ DevOps Setup (Brief Overview)
+
+- CI/CD with Jenkins + GitHub Actions
+- Provisioning with Terraform
+- App hosted on AWS (Spring Boot backend on EC2, DB on RDS)
+- Monitoring with Prometheus and Grafana (planned)
+
+---
+
+## 🧠 Future Enhancements
+
+- Machine learning-based forecasting (instead of static averages)
+- Multi-user budgets with sharing capabilities
+- Expense breakdown visualizations via charts (Recharts / D3.js)
+- Admin panel for category management
+- Export data (CSV, PDF reports)
+- Progressive Web App (PWA) support
+
+---
+
+## 🧑‍💻 How to Run Locally
+
+```bash
+# Clone the repo
+git clone https://github.com/<your-username>/clarityledger.git
+
+# Setup backend
+cd backend
+./mvnw spring-boot:run
+
+# Setup frontend
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 📌 Deployment Ready
+
+This project is **cloud-ready and production-friendly** — designed with scalability in mind. Easily configurable for AWS, GCP, or even on-prem deployments.
+
+---
+
+## 👨‍💻 Author
+
+Made with 💙 by [Mithu](https://github.com/yourusername)
+
+> _"Finance is hard. Tracking it shouldn’t be."_ — ClarityLedger
+
+---
+
+## 📄 License
+
+MIT License — feel free to use and extend this project.
