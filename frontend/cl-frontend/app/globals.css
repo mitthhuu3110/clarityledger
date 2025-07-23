@@ -2,38 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
-  --bg: #EDEADE;         /* Light background */
-  --base: #000000;       /* Light text */
+  --bg: #EDEADE;
+  --base: #000000;
   --brand-orange: #f97316;
 }
 
 .dark {
-  --bg: #1e1e1e;         /* Dark background */
-  --base: #ffffff;       /* Dark text */
+  --bg: #1e1e1e;
+  --base: #ffffff;
   --brand-orange: #f97316;
 }
 
 body {
-  background-color: var(--bg);        /* ✅ use the correct CSS variable */
+  background-color: var(--bg);
   color: var(--base);
   font-family: theme('fontFamily.sans');
   transition: background-color 0.3s ease, color 0.3s ease;
   scroll-behavior: smooth;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 30s linear infinite;
 }
 
 ::-webkit-scrollbar {
