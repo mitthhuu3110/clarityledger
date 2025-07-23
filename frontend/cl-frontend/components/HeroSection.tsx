@@ -1,59 +1,50 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-import Image from 'next/image';
 
-export default function HeroSection() {
+export default function Hero() {
   return (
-    <section className="min-h-[80vh] w-full flex flex-col md:flex-row items-center justify-between py-6 px-6 md:px-20">
-      {/* Left Content */}
-      <div className="flex flex-col items-start gap-6 max-w-xl text-[color:var(--base)]">
+    <section
+      id="hero"
+      className="w-full flex flex-col items-center justify-center text-center py-16 px-6 sm:px-10 md:px-16 text-[color:var(--base)]"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="max-w-4xl w-full space-y-10"
+      >
+        {/* 🎉 Welcome message at the top */}
         <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-4xl sm:text-5xl font-bold leading-tight"
+          className="text-xl sm:text-2xl font-semibold text-gray-600 dark:text-gray-300 flex items-center justify-center gap-2"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
-          Take Control of <span className="text-brand-orange">Your Finances.</span>
+          Hi, Welcome to ClarityLedger
+          <motion.span
+            animate={{ rotate: [0, 15, -10, 15, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8 }}
+            className="inline-block origin-[70%_70%]"
+          >
+            👋
+          </motion.span>
         </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-lg text-gray-600 dark:text-gray-300"
+        {/* 💻 App tagline */}
+        <motion.h2
+          whileHover={{ scale: 1.02 }}
+          className="text-4xl sm:text-5xl font-extrabold font-sans tracking-wide text-brand-orange"
         >
-          ClarityLedger helps you track expenses, manage budgets, forecast spendings, and make smarter money decisions — all in one place.
-        </motion.p>
+          Track Smarter. Budget Better.
+        </motion.h2>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-        >
-          <Link href="/overview">
-            <button className="bg-brand-orange hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition">
-              Go to Dashboard →
-            </button>
-          </Link>
-        </motion.div>
-      </div>
-
-      {/* Right Image */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-        className="mt-10 md:mt-0"
-      >
-        <Image
-          src="/images/dashboard.png" // Add your illustration to public/images/
-          alt="Finance Illustration"
-          width={500}
-          height={500}
-          className="w-full h-auto"
-        />
+        {/* Short description */}
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 font-mono max-w-2xl mx-auto">
+          ClarityLedger helps you take control of your finances with real-time expense tracking,
+          personalized forecasting, and intuitive budget management.
+        </p>
       </motion.div>
     </section>
   );

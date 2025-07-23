@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 const testimonials = [
   {
@@ -44,19 +44,25 @@ const testimonials = [
 
 export default function TestimonialsSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollX, setScrollX] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (containerRef.current) {
-        const newScroll =
-          (containerRef.current.scrollLeft + 1) %
-          containerRef.current.scrollWidth;
-        containerRef.current.scrollLeft = newScroll;
-        setScrollX(newScroll);
-      }
-    }, 30);
-    return () => clearInterval(interval);
+    const container = containerRef.current;
+    let scrollInterval: NodeJS.Timeout;
+
+    if (container) {
+      scrollInterval = setInterval(() => {
+        if (
+          container.scrollLeft + container.clientWidth >=
+          container.scrollWidth
+        ) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: 1, behavior: 'smooth' });
+        }
+      }, 30); // smooth pace
+    }
+
+    return () => clearInterval(scrollInterval);
   }, []);
 
   return (
@@ -78,14 +84,14 @@ export default function TestimonialsSection() {
         ref={containerRef}
         className="flex gap-6 overflow-x-auto scrollbar-none scroll-smooth"
       >
-        {testimonials.map((t, index) => (
+        {[...testimonials, ...testimonials].map((t, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.2 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
             viewport={{ once: true }}
-            className="min-w-[300px] max-w-sm flex-shrink-0 border border-zinc-300 dark:border-zinc-700 bg-white/40 dark:bg-zinc-900/40 
+            className="min-w-[320px] max-w-[320px] flex-shrink-0 border border-zinc-300 dark:border-zinc-700 bg-white/40 dark:bg-zinc-900/40 
               rounded-2xl p-6 shadow-md hover:shadow-[0_4px_30px_rgba(255,115,0,0.2)] transition-all duration-300 backdrop-blur-sm"
           >
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
