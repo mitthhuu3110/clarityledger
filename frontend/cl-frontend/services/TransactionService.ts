@@ -1,6 +1,9 @@
-import { Transaction } from '@/types';
+// services/TransactionService.ts
 
-const BASE_URL = 'http://localhost:8080/api/transactions';
+import { Transaction, Category } from '@/types';
+
+const BASE_TXN_URL = 'http://localhost:8080/api/transactions';
+const BASE_CATEGORY_URL = 'http://localhost:8080/api/categories';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -10,8 +13,10 @@ const getAuthHeaders = () => {
   };
 };
 
-export const fetchTransactions = async (): Promise<Transaction[]> => {
-  const res = await fetch(BASE_URL, {
+// ✅ Transactions
+
+export const getTransactions = async (): Promise<Transaction[]> => {
+  const res = await fetch(BASE_TXN_URL, {
     headers: getAuthHeaders(),
   });
 
@@ -19,8 +24,10 @@ export const fetchTransactions = async (): Promise<Transaction[]> => {
   return res.json();
 };
 
-export const createTransaction = async (transaction: Omit<Transaction, 'id'>): Promise<Transaction> => {
-  const res = await fetch(BASE_URL, {
+export const createTransaction = async (
+  transaction: Omit<Transaction, 'id'>
+): Promise<Transaction> => {
+  const res = await fetch(BASE_TXN_URL, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(transaction),
@@ -34,7 +41,7 @@ export const updateTransaction = async (
   id: number,
   updatedData: Partial<Transaction>
 ): Promise<Transaction> => {
-  const res = await fetch(`${BASE_URL}/${id}`, {
+  const res = await fetch(`${BASE_TXN_URL}/${id}`, {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(updatedData),
@@ -45,10 +52,22 @@ export const updateTransaction = async (
 };
 
 export const deleteTransaction = async (id: number): Promise<void> => {
-  const res = await fetch(`${BASE_URL}/${id}`, {
+  const res = await fetch(`${BASE_TXN_URL}/${id}`, {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
 
   if (!res.ok) throw new Error('Failed to delete transaction');
+};
+
+// ✅ Categories
+
+export const getCategories = async (): Promise<Category[]> => {
+  const res = await fetch(BASE_CATEGORY_URL, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) throw new Error('Failed to fetch categories');
+  return res.json();
 };

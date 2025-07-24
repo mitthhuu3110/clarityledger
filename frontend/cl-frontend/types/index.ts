@@ -1,3 +1,5 @@
+// types/index.ts
+
 export type Transaction = {
   id: number;
   title: string;
@@ -6,8 +8,6 @@ export type Transaction = {
   category: string;
   type: TransactionType;
 };
-
-// types/index.ts
 
 // Enum for Transaction Type
 export enum TransactionType {
@@ -22,3 +22,10 @@ export type Category = {
   type: TransactionType; // INCOME or EXPENSE
 };
 
+// Props for TransactionForm
+export type TransactionFormProps = {
+  onClose: () => void;
+  onSuccess: () => Promise<void>; // ✅ This was missing
+  initialData?: Transaction;
+  categories: Category[];
+};
