@@ -1,11 +1,16 @@
-// components/transactions/TransactionForm.tsx
-
+// ✅ Updated: TransactionForm.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { TransactionType, Category, Transaction, TransactionFormProps } from '@/types';
-import { createTransaction, updateTransaction } from '@/services/TransactionService';
-import { fetchCategories } from '@/services/CategoryService';
+import { TransactionType, Category, Transaction } from '@/types';
+import { createTransaction } from '@/services/TransactionService';
+
+type TransactionFormProps = {
+  onClose: () => void;
+  onSuccess: () => Promise<void>;
+  initialData?: Transaction;
+  categories: Category[];
+};
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
   onClose,
@@ -23,15 +28,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   );
   const [category, setCategory] = useState<string>(initialData?.category || '');
 
-  useEffect(() => {
-    // Reset category when type changes
-    setCategory('');
-  }, [type]);
+  const filteredCategories = categories.filter((cat) => cat.type === type);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!title || !amount || !category) return;
 
-    const transactionPayload = {
+    const newTransaction: Omit<Transaction, 'id'> = {
       title,
       amount,
       date,
@@ -40,16 +43,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     };
 
     try {
-      if (initialData?.id) {
-        await updateTransaction(initialData.id, transactionPayload);
-      } else {
-        await createTransaction(transactionPayload);
-      }
-
+      await createTransaction(newTransaction);
       await onSuccess();
       onClose();
-    } catch (error) {
-      console.error('Transaction submission failed:', error);
+    } catch (err) {
+      console.error('Failed to submit transaction', err);
     }
   };
 
@@ -57,11 +55,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-900 p-6 rounded-xl shadow-2xl w-full max-w-md space-y-4"
+        className="bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md space-y-4"
       >
-        <h2 className="text-xl font-bold text-white">
-          {initialData ? 'Edit Transaction' : 'Add Transaction'}
-        </h2>
+        <h2 className="text-xl font-semibold text-white">Add Transaction</h2>
 
         <input
           type="text"
@@ -74,6 +70,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         <input
           type="number"
           placeholder="Amount"
+          step="0.01"
+          min="0"
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value))}
           className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none"
@@ -104,13 +102,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600"
         >
           <option value="">Select Category</option>
-          {categories
-            .filter((cat) => cat.type === type)
-            .map((cat) => (
-              <option key={cat.id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
+          {filteredCategories.map((cat) => (
+            <option key={cat.id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
         </select>
 
         <div className="flex justify-between pt-2">
@@ -125,7 +121,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             type="submit"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
           >
-            {initialData ? 'Update' : 'Add'}
+            Add
           </button>
         </div>
       </form>

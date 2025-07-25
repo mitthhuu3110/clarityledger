@@ -5,7 +5,7 @@ import TransactionTable from '@/components/transactions/TransactionTable';
 import TransactionForm from '@/components/transactions/TransactionForm';
 import FilterBar from '@/components/transactions/FilterBar';
 import { Transaction, Category, TransactionType } from '@/types';
-import { fetchTransactions, createTransaction, updateTransaction, deleteTransaction } from '@/services/TransactionService';
+import { getTransactions, createTransaction, updateTransaction, deleteTransaction } from '@/services/TransactionService';
 import { fetchCategories } from '@/services/CategoryService';
 
 export default function TransactionsPage() {
@@ -39,7 +39,7 @@ export default function TransactionsPage() {
 
   const loadTransactions = async () => {
     try {
-      const data = await fetchTransactions();
+      const data = await getTransactions();
       setTransactions(data);
     } catch (err) {
       console.error('Failed to fetch transactions:', err);
