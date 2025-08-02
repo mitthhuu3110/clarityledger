@@ -1,3 +1,11 @@
+
+
+# This project has been cancelled. 
+
+
+
+
+
 # 💰 ClarityLedger
 
 **ClarityLedger** is a full-stack **Smart Budgeting & Expense Forecasting** application designed to help individuals seamlessly manage, track, and forecast their financial transactions. It leverages modern tech stacks across frontend, backend, DevOps, and cloud — making it a real-world, scalable finance tracking system.
